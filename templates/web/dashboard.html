@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <title>Dashboard | TYNEX OFFICIAL</title>
+  <!-- Favicon Logo -->
+  <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/BnmwBb8h/1000153544.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/python/python.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root { 
+      --bg: #050508; 
+      --card: rgba(20, 20, 30, 0.7); 
+      --accent: #3b82f6; 
+      --border: rgba(255, 255, 255, 0.08); 
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --glass: blur(20px);
+      --terminal-bg: #0a0a0f;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body { 
+        margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main);
+        background-image: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+        min-height: 100vh; overflow-x: hidden;
+    }
+
+    .topbar { 
+        display: flex; justify-content: space-between; align-items: center; 
+        padding: 16px 5%; background: rgba(5, 5, 8, 0.8); backdrop-filter: var(--glass); 
+        position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); 
+    }
+    .logo-box { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 16px; letter-spacing: -0.5px; }
+    .brand-logo-img { 
+        width: 38px; height: 38px; border-radius: 10px; object-fit: cover; 
+        border: 1px solid rgba(59, 130, 246, 0.5); box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); 
+    }
+
+    .container { padding: 25px 5%; max-width: 1100px; margin: auto; }
+    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+    .dash-header h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+
+    .srv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .srv-card { 
+        background: var(--card); border-radius: 20px; padding: 20px; 
+        border: 1px solid var(--border); transition: 0.3s; backdrop-filter: var(--glass); 
+        display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .srv-card:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+
+    .btn { 
+        padding: 10px 20px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; 
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; transition: 0.3s; text-decoration: none;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+    .btn-blue:hover { filter: brightness(1.1); }
+    .btn-gray { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid var(--border); }
+    .btn-gray:hover { background: rgba(255, 255, 255, 0.1); }
+
+    .management-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 900px) { .management-grid { grid-template-columns: 2fr 1fr; } }
+
+    .action-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+
+    #console-wrapper { background: var(--terminal-bg); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+    .terminal-header { background: rgba(255, 255, 255, 0.03); padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text-dim); }
+    #console { height: 320px; padding: 18px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6; color: #34d399; }
+    .terminal-input-area { background: rgba(0,0,0,0.3); padding: 12px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .terminal-input-area input { background: transparent; border: none; color: #fff; flex: 1; font-family: 'JetBrains Mono'; font-size: 13px; outline: none; }
+    .log-line { margin-bottom: 3px; word-break: break-all; }
+    .log-time { color: #64748b; margin-right: 8px; }
+
+    .file-manager-box { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; backdrop-filter: var(--glass); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+    .fm-header { padding: 14px 18px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .file-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+    .file-item:hover { background: rgba(255, 255, 255, 0.04); }
+    .file-item span { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
+    .file-item i.fa-folder { color: #fbbf24; }
+    .file-item i.fa-file { color: #60a5fa; }
+
+    .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+    .menu-content { background: #12121a; width: 300px; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+    .menu-item { padding: 16px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; font-weight: 500; }
+    .menu-item:hover { background: rgba(255,255,255,0.06); }
+    
+    #editor { display:none; position:fixed; inset:0; background:var(--bg); z-index:6000; padding:20px; }
+    .CodeMirror { height: calc(100vh - 80px) !important; border-radius: 14px; font-size: 14px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="logo-box">
+        <img src="https://i.postimg.cc/BnmwBb8h/1000153544.jpg" alt="Logo" class="brand-logo-img">
+        <span>TYNEX CLOUD</span>
+    </div>
+    <div>
+        <button class="btn btn-gray" onclick="location.href='/logout'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</div>
+
+<div class="container" id="homeView">
+    <div class="dash-header">
+        <div>
+            <h2>My Instances</h2>
+            <p style="color: var(--text-dim); font-size: 13px; margin-top: 4px;">Manage and monitor your active bot servers</p>
+        </div>
+        <button class="btn btn-blue" onclick="createServer()"><i class="fas fa-plus"></i> New Server</button>
+    </div>
+    <div class="srv-grid" id="srvList"></div>
+</div>
+
+<div class="container" id="manageView" style="display:none">
+    <div class="dash-header">
+        <button class="btn btn-gray" onclick="location.reload()"><i class="fas fa-arrow-left"></i> Back</button>
+        <div id="vUptime" style="font-size: 12px; font-family: 'JetBrains Mono'; color: var(--success); background: rgba(16, 185, 129, 0.1); padding: 6px 14px; border-radius: 50px; border: 1px solid rgba(16, 185, 129, 0.2);">OFFLINE</div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-blue" style="justify-content:center" onclick="srvAction('start')"><i class="fas fa-play"></i> START</button>
+        <button class="btn btn-gray" style="justify-content:center" onclick="srvAction('restart')"><i class="fas fa-sync"></i> RESTART</button>
+        <button class="btn btn-gray" style="justify-content:center; color: var(--danger)" onclick="srvAction('stop')"><i class="fas fa-stop"></i> STOP</button>
+    </div>
+
+    <div class="management-grid">
+        <div>
+            <div id="console-wrapper">
+                <div class="terminal-header">
+                    <span><i class="fas fa-terminal"></i> LIVE CONSOLE</span>
+                    <span id="vSrvName" style="color:var(--accent); font-weight:700;">-</span>
+                </div>
+                <div id="console"></div>
+                <div class="terminal-input-area">
+                    <span style="color:var(--accent); font-weight:bold;">$</span>
+                    <input type="text" id="termCmd" placeholder="Type command..." onkeydown="if(event.key==='Enter') sendConsoleCommand()">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="file-manager-box">
+                <div class="fm-header">
+                    <span style="font-weight:800; font-size:13px;">FILE MANAGER</span>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn btn-gray" style="padding:6px 10px" onclick="document.getElementById('fUp').click()"><i class="fas fa-upload"></i></button>
+                        <button class="btn btn-gray" style="padding:6px 10px" onclick="createNew('file')"><i class="fas fa-plus"></i></button>
+                        <input type="file" id="fUp" hidden onchange="uploadFile(this)">
+                    </div>
+                </div>
+                <div id="fileList" style="max-height: 380px; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="menu-overlay" id="menuOverlay" onclick="this.style.display='none'">
+    <div class="menu-content" onclick="event.stopPropagation()">
+        <div class="menu-item" id="btnEdit"><i class="fas fa-edit" style="color:var(--accent)"></i> Edit Code</div>
+        <div class="menu-item" id="btnUnzip"><i class="fas fa-box-open" style="color:#fbbf24"></i> Extract Zip</div>
+        <div class="menu-item" id="btnDelete" style="color:var(--danger)"><i class="fas fa-trash"></i> Delete Item</div>
+    </div>
+</div>
+
+<div id="editor">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <span id="edFile" style="font-family:'JetBrains Mono'; font-size:14px; color:var(--accent); font-weight:700;"></span>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-gray" onclick="closeEditor()">Close</button>
+            <button class="btn btn-blue" onclick="saveFile()">Save Changes</button>
+        </div>
+    </div>
+    <textarea id="edText"></textarea>
+</div>
+
+<script>
+let curSrv = null; let logItv = null; let currentSubPath = ""; let editorInstance = null;
+
+async function loadSrv() {
+    const r = await fetch('/servers'); const d = await r.json();
+    document.getElementById('srvList').innerHTML = d.servers.map(s => `
+        <div class="srv-card animate__animated animate__fadeInUp" onclick='openSrv(${JSON.stringify(s)})'>
+            <div>
+                <div style="font-weight:800; font-size:16px; margin-bottom: 4px;">${s.name}</div>
+                <div style="font-size:11px; color:var(--text-dim); font-family: 'JetBrains Mono';">${s.folder}</div>
+            </div>
+            <div style="text-align:right">
+                <div style="font-size:11px; font-weight:700; color:${s.online?'var(--success)':'var(--text-dim)'}">${s.online?'ONLINE':'OFFLINE'}</div>
+                <div style="font-size:10px; color:var(--text-dim); margin-top:4px;">${s.cpu} | ${s.ram}</div>
+            </div>
+        </div>`).join('');
+}
+
+function openSrv(s) {
+    curSrv = s; document.getElementById('homeView').style.display='none'; document.getElementById('manageView').style.display='block';
+    document.getElementById('vSrvName').innerText = s.name;
+    loadFiles(); startLogs();
+}
+
+async function unzipAction(name) {
+    Swal.fire({title:'Extracting archive...', allowOutsideClick:false, didOpen:()=>Swal.showLoading(), background:'#12121a', color:'#fff'});
+    const res = await fetch(`/files/unzip/${curSrv.folder}`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name: name, path: currentSubPath})
+    });
+    const d = await res.json(); Swal.close();
+    if(d.status==='success'){ loadFiles(); notify("Extracted successfully!"); } else { Swal.fire('Error', d.msg, 'error'); }
+}
+
+function startLogs() {
+    if(logItv) clearInterval(logItv);
+    logItv = setInterval(async () => {
+        if(!curSrv) return;
+        const r = await fetch(`/server/log/${curSrv.folder}`); const d = await r.json();
+        const c = document.getElementById('console');
+        if(d.log && d.log !== c.getAttribute('data-raw')) {
+            c.setAttribute('data-raw', d.log);
+            c.innerHTML = d.log.split('\n').map(l => l.trim() ? `<div class="log-line"><span class="log-time">[${new Date().toLocaleTimeString()}]</span>${l}</div>` : '').join('');
+            c.scrollTop = c.scrollHeight;
+        }
+        document.getElementById('vUptime').innerText = d.online ? 'UPTIME: ' + d.uptime : 'OFFLINE';
+    }, 1000);
+}
+
+async function loadFiles() {
+    const r = await fetch(`/files/list/${curSrv.folder}?path=${currentSubPath}`); const d = await r.json();
+    document.getElementById('fileList').innerHTML = d.map(f => `
+        <div class="file-item" onclick="${f.is_dir ? `enterFolder('${f.name}')` : `editFile('${f.name}')`}">
+            <span><i class="fas ${f.is_dir?'fa-folder':'fa-file'}"></i> ${f.name}</span>
+            <i class="fas fa-ellipsis-v" style="color:var(--text-dim); padding: 5px;" onclick="event.stopPropagation(); openFileMenu('${f.name}', ${f.is_zip}, ${f.is_dir})"></i>
+        </div>`).join('');
+}
+
+function openFileMenu(name, isZip, isDir) {
+    document.getElementById('btnEdit').style.display = isDir ? 'none' : 'flex';
+    document.getElementById('btnUnzip').style.display = isZip ? 'flex' : 'none';
+    document.getElementById('btnEdit').onclick = () => editFile(name);
+    document.getElementById('btnUnzip').onclick = () => unzipAction(name);
+    document.getElementById('btnDelete').onclick = () => deleteFile(name);
+    document.getElementById('menuOverlay').style.display = 'flex';
+}
+
+function enterFolder(n) { currentSubPath += (currentSubPath===""?"":"/")+n; loadFiles(); }
+async function srvAction(a) { await fetch(`/server/action/${curSrv.folder}/${a}`, {method:'POST'}); }
+
+async function createServer() { 
+    const {value:n} = await Swal.fire({
+        title:'Create New Server', 
+        input:'text', 
+        inputPlaceholder: 'Enter server name...',
+        background:'#12121a', 
+        color:'#fff',
+        confirmButtonColor: '#3b82f6',
+        showCancelButton: true
+    }); 
+    if(n){ 
+        await fetch('/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n})}); 
+        loadSrv(); 
+    } 
+}
+
+async function editFile(n) {
+    const res = await fetch(`/files/read/${curSrv.folder}?name=${n}&path=${currentSubPath}`);
+    const data = await res.json();
+    document.getElementById('edFile').innerText = n;
+    document.getElementById('edText').value = data.content;
+    document.getElementById('editor').style.display = 'block';
+    if(!editorInstance) {
+        editorInstance = CodeMirror.fromTextArea(document.getElementById('edText'), { mode: "python", theme: "dracula", lineNumbers: true, lineWrapping: true });
+    } else { editorInstance.setValue(data.content); setTimeout(() => editorInstance.refresh(), 100); }
+}
+
+async function saveFile() {
+    const n = document.getElementById('edFile').innerText;
+    const c = editorInstance.getValue();
+    await fetch(`/files/save/${curSrv.folder}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:n, content:c, path:currentSubPath})});
+    closeEditor(); notify("File Saved Successfully!");
+}
+
+async function uploadFile(input) {
+    if(!input.files[0]) return;
+    let fd = new FormData(); fd.append("file", input.files[0]); fd.append("path", currentSubPath);
+    await fetch(`/files/upload/${curSrv.folder}`, {method:'POST', body:fd}); loadFiles(); notify("File Uploaded!");
+}
+
+async function createNew(type) {
+    const {value:n} = await Swal.fire({
+        title:'Create New ' + type, 
+        input:'text', 
+        background:'#12121a', 
+        color:'#fff',
+        confirmButtonColor: '#3b82f6',
+        showCancelButton: true
+    });
+    if(n){
+        const url = type==='file' ? `/files/create-file/${curSrv.folder}` : `/files/create-folder/${curSrv.folder}`;
+        await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:n, path:currentSubPath})});
+        loadFiles();
+    }
+}
+
+async function deleteFile(n) {
+    const res = await Swal.fire({
+        title:'Delete item?', 
+        text: n, 
+        icon:'warning', 
+        background:'#12121a', 
+        color:'#fff', 
+        showCancelButton:true,
+        confirmButtonColor: '#ef4444'
+    });
+    if(res.isConfirmed) {
+        await fetch(`/files/delete-bulk/${curSrv.folder}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({names:[n], path:currentSubPath})});
+        loadFiles();
+    }
+}
+
+function sendConsoleCommand() {
+    const cmd = document.getElementById('termCmd').value;
+    if(cmd) { fetch(`/server/command/${curSrv.folder}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({command:cmd})}); document.getElementById('termCmd').value=''; }
+}
+
+function closeEditor() { document.getElementById('editor').style.display='none'; }
+function notify(t) { Swal.fire({toast:true, position:'top-end', timer:2000, title:t, showConfirmButton:false, icon:'success', background:'#12121a', color:'#fff'}); }
+
+document.addEventListener('DOMContentLoaded', loadSrv);
+</script>
+</body>
+</html>
